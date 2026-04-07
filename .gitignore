@@ -1,0 +1,28 @@
+# Eclipse / STM32CubeIDE workspace metadata
+.metadata/
+.settings/
+RemoteSystemsTempFiles/
+
+# Build output directories
+Debug/
+Release/
+*.d
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.su
+
+# STM32CubeIDE project files (keep .project and .cproject for IDE import)
+# Uncomment below if you want to exclude them:
+# .project
+# .cproject
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
