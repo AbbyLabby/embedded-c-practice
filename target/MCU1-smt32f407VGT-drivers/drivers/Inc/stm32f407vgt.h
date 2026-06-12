@@ -225,6 +225,25 @@ typedef struct
     volatile uint32_t PLLI2SCFGR;  /* PLLI2SCFGR — PLLI2S configuration register           Offset: 0x84 */
 } RCC_RegDef_t;
 
+typedef struct
+{
+    volatile uint32_t IMR;    /* IMR   — interrupt mask register              Offset: 0x00 */
+    volatile uint32_t EMR;    /* EMR   — event mask register                  Offset: 0x04 */
+    volatile uint32_t RTSR;   /* RTSR  — rising trigger selection register    Offset: 0x08 */
+    volatile uint32_t FTSR;   /* FTSR  — falling trigger selection register   Offset: 0x0C */
+    volatile uint32_t SWIER;  /* SWIER — software interrupt event register    Offset: 0x10 */
+    volatile uint32_t PR;     /* PR    — pending register                     Offset: 0x14 */
+} EXTI_RegDef_t;
+
+typedef struct
+{
+    volatile uint32_t MEMRMP;
+    volatile uint32_t PMC;
+    volatile uint32_t EXTICR[4];
+    volatile uint32_t CMPCR;
+} SYSCFG_RegDef_t;
+
+
 /*
  * Convenience macros — cast base address to register struct pointer
  * Example usage:
@@ -247,6 +266,10 @@ typedef struct
  *  RCC peripheral struct pointer
  * ============================================================ */
 #define RCC     ((RCC_RegDef_t *) RCC_BASE_ADDR)
+
+#define EXTI    ((EXTI_RegDef_t *) EXTI_BASE_ADDR)
+
+#define SYSCFG ((SYSCFG_RegDef_t *) SYSCFG_BASE_ADDR)
 
 /* ============================================================
  *  GPIO peripheral clock enable macros (AHB1ENR)
@@ -339,6 +362,24 @@ typedef struct
 #define GPIOG_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 6 ) ); ( RCC->AHB1RSTR &= ~( 1 << 6 ) ); } while(0)
 #define GPIOH_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 7 ) ); ( RCC->AHB1RSTR &= ~( 1 << 7 ) ); } while(0)
 #define GPIOI_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 8 ) ); ( RCC->AHB1RSTR &= ~( 1 << 8 ) ); } while(0)
+
+#define GPIO_BASEADDR_TO_CODE(x)      ( (x == GPIOA) ? 0 :\
+                                        (x == GPIOB) ? 1 :\
+                                        (x == GPIOC) ? 2 :\
+                                        (x == GPIOD) ? 3 :\
+                                        (x == GPIOE) ? 4 :\
+                                        (x == GPIOF) ? 5 :\
+                                        (x == GPIOG) ? 6 :\
+                                        (x == GPIOH) ? 7 :\
+                                        (x == GPIOI) ? 8 : 0)
+
+#define IRQ_NO_EXTI0        6
+#define IRQ_NO_EXTI1        7
+#define IRQ_NO_EXTI2        8
+#define IRQ_NO_EXTI3        9
+#define IRQ_NO_EXTI4        10
+#define IRQ_NO_EXTI9_5      23
+#define IRQ_NO_EXTI15_10    40
 
 
 /* ============================================================
