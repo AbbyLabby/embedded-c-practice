@@ -109,6 +109,6 @@ void     GPIO_WriteToOutputPort(GPIO_RegDef_t *pGPIOx, int16_t Value);      /* W
 void     GPIO_ToggleOutptPin(GPIO_RegDef_t *pGPIOx, uint8_t PinNumber);     /* Toggle the current output state of a single pin              */
 
 void     GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t Status);      /* Enable/disable an IRQ line in the NVIC (processor side)        */
-void     GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority);  /* Set IRQ priority in the NVIC IPR registers (0 = highest)       */
+void     GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);  /* Set IRQ priority in the NVIC IPR registers (0 = highest)       */
 void     GPIO_IRQHandling(uint8_t PinNumber);                             /* Call from EXTIx_IRQHandler to clear the EXTI pending bit       */
 #endif /* INC_STM32F407VGT_GPIO_DRIVER_H_ */

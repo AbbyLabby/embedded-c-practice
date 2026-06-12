@@ -439,7 +439,7 @@ void GPIO_IRQInterruptConfig(uint8_t IRQNumber, uint8_t Status)
  *                    hence the extra (8 - NO_PR_BITS_IMPLEMENTED) shift.
  *
  *********************************************************************************/
-void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority)
+void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority)
 {
 	// Find the IPR register and the byte section within it
 	uint8_t iprx = IRQNumber / 4;             // which IPR register
@@ -448,7 +448,7 @@ void GPIO_IRQPriorityConfig(uint8_t IRQNumber, uint8_t IRQPriority)
 	// Lower bits of each byte are not implemented, so shift the priority up
 	uint8_t shift_amount = ( (8 * iprx_section) + (8 - NO_PR_BITS_IMPLEMENTED) );
 
-	*(NVIC_PR_BASE_ADDR + ( iprx * 4 )) |= ( IRQPriority << shift_amount );
+	*(NVIC_PR_BASE_ADDR + iprx) |= ( IRQPriority << shift_amount );
 }
 
 /*********************************************************************************
