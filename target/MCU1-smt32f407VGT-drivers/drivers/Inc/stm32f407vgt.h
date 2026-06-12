@@ -15,6 +15,36 @@
 
 /*
  * ============================================================
+ *  PROCESSOR-SPECIFIC DETAILS — ARM Cortex-M4 NVIC
+ *  (Generic ARM Cortex-M4 User Guide, Section 4.3 — NVIC)
+ *  These addresses are internal to the core, NOT in the STM32 memory map.
+ * ============================================================
+ */
+
+/* NVIC ISER — Interrupt Set-Enable Registers. Write 1 to ENABLE an IRQ. */
+#define NVIC_ISER0 ( (volatile uint32_t*) 0xE000E100 )  /* IRQ 0..31   */
+#define NVIC_ISER1 ( (volatile uint32_t*) 0xE000E104 )  /* IRQ 32..63  */
+#define NVIC_ISER2 ( (volatile uint32_t*) 0xE000E108 )  /* IRQ 64..95  */
+#define NVIC_ISER3 ( (volatile uint32_t*) 0xE000E10C )  /* IRQ 96..127 */
+#define NVIC_ISER4 ( (volatile uint32_t*) 0xE000E110 )  /* IRQ 128..159 */
+#define NVIC_ISER5 ( (volatile uint32_t*) 0xE000E114 )  /* IRQ 160..191 */
+
+/* NVIC ICER — Interrupt Clear-Enable Registers. Write 1 to DISABLE an IRQ. */
+#define NVIC_ICER0 ( (volatile uint32_t*) 0XE000E180 )  /* IRQ 0..31   */
+#define NVIC_ICER1 ( (volatile uint32_t*) 0xE000E184 )  /* IRQ 32..63  */
+#define NVIC_ICER2 ( (volatile uint32_t*) 0xE000E188 )  /* IRQ 64..95  */
+#define NVIC_ICER3 ( (volatile uint32_t*) 0xE000E18C )  /* IRQ 96..127 */
+#define NVIC_ICER4 ( (volatile uint32_t*) 0xE000E190 )  /* IRQ 128..159 */
+#define NVIC_ICER5 ( (volatile uint32_t*) 0xE000E194 )  /* IRQ 160..191 */
+
+/* NVIC IPR — Interrupt Priority Registers base. 1 byte per IRQ, 4 IRQs per register. */
+#define NVIC_PR_BASE_ADDR ( (volatile uint32_t*) 0xE000E400 )
+
+/* Number of priority bits actually implemented in each IPR byte (STM32 uses upper 4 bits). */
+#define NO_PR_BITS_IMPLEMENTED 4
+
+/*
+ * ============================================================
  *  MEMORY MAP — Base addresses of main memory regions
  *  (RM0090, Section 2.3 — Memory map)
  * ============================================================
@@ -225,6 +255,13 @@ typedef struct
     volatile uint32_t PLLI2SCFGR;  /* PLLI2SCFGR — PLLI2S configuration register           Offset: 0x84 */
 } RCC_RegDef_t;
 
+/*
+ * ============================================================
+ *  EXTI REGISTER DEFINITION STRUCTURE
+ *  (RM0090, Section 12.3 — EXTI registers)
+ *  External interrupt/event controller: edge detection + masking per line.
+ * ============================================================
+ */
 typedef struct
 {
     volatile uint32_t IMR;    /* IMR   — interrupt mask register              Offset: 0x00 */
@@ -232,15 +269,22 @@ typedef struct
     volatile uint32_t RTSR;   /* RTSR  — rising trigger selection register    Offset: 0x08 */
     volatile uint32_t FTSR;   /* FTSR  — falling trigger selection register   Offset: 0x0C */
     volatile uint32_t SWIER;  /* SWIER — software interrupt event register    Offset: 0x10 */
-    volatile uint32_t PR;     /* PR    — pending register                     Offset: 0x14 */
+    volatile uint32_t PR;     /* PR    — pending register (clear by writing 1) Offset: 0x14 */
 } EXTI_RegDef_t;
 
+/*
+ * ============================================================
+ *  SYSCFG REGISTER DEFINITION STRUCTURE
+ *  (RM0090, Section 9.2 — SYSCFG registers)
+ *  Used mainly to route a GPIO port to an EXTI line via EXTICR.
+ * ============================================================
+ */
 typedef struct
 {
-    volatile uint32_t MEMRMP;
-    volatile uint32_t PMC;
-    volatile uint32_t EXTICR[4];
-    volatile uint32_t CMPCR;
+    volatile uint32_t MEMRMP;      /* MEMRMP  — memory remap register                    Offset: 0x00 */
+    volatile uint32_t PMC;         /* PMC     — peripheral mode configuration register   Offset: 0x04 */
+    volatile uint32_t EXTICR[4];   /* EXTICR  — external interrupt config (EXTI line mux) Offset: 0x08-0x14 */
+    volatile uint32_t CMPCR;       /* CMPCR   — compensation cell control register       Offset: 0x20 */
 } SYSCFG_RegDef_t;
 
 
@@ -363,6 +407,11 @@ typedef struct
 #define GPIOH_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 7 ) ); ( RCC->AHB1RSTR &= ~( 1 << 7 ) ); } while(0)
 #define GPIOI_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 8 ) ); ( RCC->AHB1RSTR &= ~( 1 << 8 ) ); } while(0)
 
+/* ============================================================
+ *  GPIO base address -> port code (0..8) for SYSCFG_EXTICR
+ *  Maps a GPIO port pointer to the 4-bit code used to select
+ *  which port drives a given EXTI line.
+ * ============================================================ */
 #define GPIO_BASEADDR_TO_CODE(x)      ( (x == GPIOA) ? 0 :\
                                         (x == GPIOB) ? 1 :\
                                         (x == GPIOC) ? 2 :\
@@ -373,13 +422,32 @@ typedef struct
                                         (x == GPIOH) ? 7 :\
                                         (x == GPIOI) ? 8 : 0)
 
-#define IRQ_NO_EXTI0        6
-#define IRQ_NO_EXTI1        7
-#define IRQ_NO_EXTI2        8
-#define IRQ_NO_EXTI3        9
-#define IRQ_NO_EXTI4        10
-#define IRQ_NO_EXTI9_5      23
-#define IRQ_NO_EXTI15_10    40
+/* ============================================================
+ *  IRQ NUMBERS — EXTI lines (RM0090, Table 61 — vector table)
+ *  Position of each EXTI handler in the NVIC vector table.
+ *  Lines 5-9 share one IRQ (23); lines 10-15 share another (40).
+ * ============================================================ */
+#define IRQ_NO_EXTI0        6    /* EXTI line 0          */
+#define IRQ_NO_EXTI1        7    /* EXTI line 1          */
+#define IRQ_NO_EXTI2        8    /* EXTI line 2          */
+#define IRQ_NO_EXTI3        9    /* EXTI line 3          */
+#define IRQ_NO_EXTI4        10   /* EXTI line 4          */
+#define IRQ_NO_EXTI9_5      23   /* EXTI lines 5 to 9    */
+#define IRQ_NO_EXTI15_10    40   /* EXTI lines 10 to 15  */
+
+#define NVIC_PRIO_0        0
+#define NVIC_PRIO_1        1
+#define NVIC_PRIO_2        2
+#define NVIC_PRIO_3        3
+#define NVIC_PRIO_4        4
+#define NVIC_PRIO_5        5
+#define NVIC_PRIO_6        6
+#define NVIC_PRIO_7        7
+#define NVIC_PRIO_8        8
+#define NVIC_PRIO_9        9
+#define NVIC_PRIO_10       10
+#define NVIC_PRIO_11       11
+#define NVIC_PRIO_12       12
 
 
 /* ============================================================
