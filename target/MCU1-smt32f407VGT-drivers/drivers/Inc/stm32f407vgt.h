@@ -332,8 +332,8 @@ typedef struct
 #define SYSCFG  ((SYSCFG_RegDef_t *) SYSCFG_BASE_ADDR)
 
 #define SPI1    ( (SPI_RegDef_t *) SPI1_BASE_ADDR )
-#define SPI2    ( (SPI_RegDef_t *) SPI2_BASE_ADDR )
-#define SPI3    ( (SPI_RegDef_t *) SPI3_BASE_ADDR )
+#define SPI2    ( (SPI_RegDef_t *) SPI2_I2S2_BASE_ADDR )
+#define SPI3    ( (SPI_RegDef_t *) SPI3_I2S3_BASE_ADDR )
 
 /* ============================================================
  *  GPIO peripheral clock enable macros (AHB1ENR)
@@ -378,16 +378,16 @@ typedef struct
 /* ============================================================
  *  SPI peripheral clock enable macros (APB1ENR / APB2ENR)
  * ============================================================ */
-#define SPI1_PCLK_EN()      ( RCC->APB2ENR |= ( 1 << 12 ) )   /* Enable SPI1 clock (APB2) */
-#define SPI2_PCLK_EN()      ( RCC->APB1ENR |= ( 1 << 14 ) )   /* Enable SPI2 clock (APB1) */
-#define SPI3_PCLK_EN()      ( RCC->APB1ENR |= ( 1 << 15 ) )   /* Enable SPI3 clock (APB1) */
+#define SPI1_PCLK_EN()      do{ ( RCC->APB2ENR |= ( 1 << 12 ) );  ( SPI1->CR1 |= ( 1 << 6 ) ); } while(0)   /* Enable SPI1 clock (APB2) */
+#define SPI2_PCLK_EN()      do{ ( RCC->APB1ENR |= ( 1 << 14 ) );  ( SPI2->CR1 |= ( 1 << 6 ) ); } while(0)   /* Enable SPI2 clock (APB1) */
+#define SPI3_PCLK_EN()      do{ ( RCC->APB1ENR |= ( 1 << 15 ) );  ( SPI3->CR1 |= ( 1 << 6 ) ); } while(0)    /* Enable SPI3 clock (APB1) */
 
 /* ============================================================
  *  SPI peripheral clock disable macros (APB1ENR / APB2ENR)
  * ============================================================ */
-#define SPI1_PCLK_DI()      ( RCC->APB2ENR &= ~( 1 << 12 ) )  /* Disable SPI1 clock (APB2) */
-#define SPI2_PCLK_DI()      ( RCC->APB1ENR &= ~( 1 << 14 ) )  /* Disable SPI2 clock (APB1) */
-#define SPI3_PCLK_DI()      ( RCC->APB1ENR &= ~( 1 << 15 ) )  /* Disable SPI3 clock (APB1) */
+#define SPI1_PCLK_DI()      do{ ( RCC->APB2ENR &= ~( 1 << 12 ) );  ( SPI1->CR1 &= ~( 1 << 6 ) ); } while(0)  /* Disable SPI1 clock (APB2) */
+#define SPI2_PCLK_DI()      do{ ( RCC->APB1ENR &= ~( 1 << 14 ) );  ( SPI2->CR1 &= ~( 1 << 6 ) ); } while(0)  /* Disable SPI2 clock (APB1) */
+#define SPI3_PCLK_DI()      do{ ( RCC->APB1ENR &= ~( 1 << 15 ) );  ( SPI3->CR1 &= ~( 1 << 6 ) ); } while(0) /* Disable SPI3 clock (APB1) */
 
 /* ============================================================
  *  USART/UART peripheral clock enable macros (APB1ENR / APB2ENR)
@@ -426,6 +426,10 @@ typedef struct
 #define GPIOG_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 6 ) ); ( RCC->AHB1RSTR &= ~( 1 << 6 ) ); } while(0)
 #define GPIOH_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 7 ) ); ( RCC->AHB1RSTR &= ~( 1 << 7 ) ); } while(0)
 #define GPIOI_REG_RESET()    do{ ( RCC->AHB1RSTR |= ( 1 << 8 ) ); ( RCC->AHB1RSTR &= ~( 1 << 8 ) ); } while(0)
+
+#define SPI1_REG_RESET()     do{ ( RCC->APB2RSTR |= ( 1 << 12 ) ); ( RCC->APB2RSTR &= ~( 1 << 12 ) ); } while(0)
+#define SPI2_REG_RESET()     do{ ( RCC->APB1RSTR |= ( 1 << 14 ) ); ( RCC->APB1RSTR &= ~( 1 << 14 ) ); } while(0)
+#define SPI3_REG_RESET()     do{ ( RCC->APB1RSTR |= ( 1 << 15 ) ); ( RCC->APB1RSTR &= ~( 1 << 15 ) ); } while(0)
 
 /* ============================================================
  *  GPIO base address -> port code (0..8) for SYSCFG_EXTICR
@@ -480,7 +484,12 @@ typedef struct
 #define RESET 			DISABLE
 #define GPIO_PIN_SET 	SET
 #define GPIO_PIN_RESET 	RESET
+#define HIGH            ENABLE
+#define LOW             DISABLE
+#define FLAG_RESET      RESET
+#define FLAG_SET        SET
 
 #include "stm32f407vgt_gpio_driver.h"
+#include "stm32f407vgt_spi_driver.h"
 
 #endif /* INC_STM32F407VGT_H_ */

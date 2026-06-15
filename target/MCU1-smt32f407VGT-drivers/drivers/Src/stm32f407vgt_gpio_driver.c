@@ -29,6 +29,8 @@ void GPIO_Init(GPIO_Handle_t *pGPIOHandle)
 	uint32_t temp = 0;
 	uint8_t pin = pGPIOHandle->GPIO_PinConfig.GPIO_PinNumber;  // short alias for readability
 
+	GPIO_PeriClockControl(pGPIOHandle->pGPIOBaseAddr, ENABLE);
+
 	// 1. Configure pin mode
 	if(pGPIOHandle->GPIO_PinConfig.GPIO_PinMode <= GPIO_MODE_ANALOG)
 	{
