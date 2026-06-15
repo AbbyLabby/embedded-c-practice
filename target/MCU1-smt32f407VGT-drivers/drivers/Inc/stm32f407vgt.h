@@ -287,6 +287,22 @@ typedef struct
     volatile uint32_t CMPCR;       /* CMPCR   — compensation cell control register       Offset: 0x20 */
 } SYSCFG_RegDef_t;
 
+//SPI Register definition structure
+
+typedef struct
+{
+    volatile uint32_t CR1;
+    volatile uint32_t CR2;
+    volatile uint32_t SR;
+    volatile uint32_t DR;
+    volatile uint32_t CRCPR;
+    volatile uint32_t RXRCR;
+    volatile uint32_t TXRCR;
+    volatile uint32_t I2CCFGR;
+    volatile uint32_t I2CPR;
+} SPI_RegDef_t;
+
+
 
 /*
  * Convenience macros — cast base address to register struct pointer
@@ -313,7 +329,11 @@ typedef struct
 
 #define EXTI    ((EXTI_RegDef_t *) EXTI_BASE_ADDR)
 
-#define SYSCFG ((SYSCFG_RegDef_t *) SYSCFG_BASE_ADDR)
+#define SYSCFG  ((SYSCFG_RegDef_t *) SYSCFG_BASE_ADDR)
+
+#define SPI1    ( (SPI_RegDef_t *) SPI1_BASE_ADDR )
+#define SPI2    ( (SPI_RegDef_t *) SPI2_BASE_ADDR )
+#define SPI3    ( (SPI_RegDef_t *) SPI3_BASE_ADDR )
 
 /* ============================================================
  *  GPIO peripheral clock enable macros (AHB1ENR)
