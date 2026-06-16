@@ -159,7 +159,25 @@ void SPI_Send(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
 
 void SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len)
 {
+    while(Len > 0)
+    {
+        while (SPI_GetFlagStatus(pSPIx, SPI_SR_RXNE) == FLAG_RESET); //wait for RXNE flag set
 
+        if(pSPIx->CR1 & ( 1 << SPI_CR1_DFF)) //16it DFF
+        {
+            *((uint16_t*)pRxBuffer) = pSPIx->DR;
+            Len--;
+            Len--;
+            pRxBuffer++;
+            pRxBuffer++;
+        }
+        else //8bit DFF
+        {
+            *(pRxBuffer) = pSPIx->DR;
+            Len--;
+            pRxBuffer++;
+        }
+    }
 }
 
 void SPI_IRQInterruptConfig(uint8_t IRQNumber, uint8_t Status)
