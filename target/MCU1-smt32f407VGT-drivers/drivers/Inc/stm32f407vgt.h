@@ -378,16 +378,16 @@ typedef struct
 /* ============================================================
  *  SPI peripheral clock enable macros (APB1ENR / APB2ENR)
  * ============================================================ */
-#define SPI1_PCLK_EN()      do{ ( RCC->APB2ENR |= ( 1 << 12 ) );  ( SPI1->CR1 |= ( 1 << 6 ) ); } while(0)   /* Enable SPI1 clock (APB2) */
-#define SPI2_PCLK_EN()      do{ ( RCC->APB1ENR |= ( 1 << 14 ) );  ( SPI2->CR1 |= ( 1 << 6 ) ); } while(0)   /* Enable SPI2 clock (APB1) */
-#define SPI3_PCLK_EN()      do{ ( RCC->APB1ENR |= ( 1 << 15 ) );  ( SPI3->CR1 |= ( 1 << 6 ) ); } while(0)    /* Enable SPI3 clock (APB1) */
+#define SPI1_PCLK_EN()      ( RCC->APB2ENR |= ( 1 << 12 ) )  /* Enable SPI1 clock (APB2) */
+#define SPI2_PCLK_EN()      ( RCC->APB1ENR |= ( 1 << 14 ) )   /* Enable SPI2 clock (APB1) */
+#define SPI3_PCLK_EN()      ( RCC->APB1ENR |= ( 1 << 15 ) )    /* Enable SPI3 clock (APB1) */
 
 /* ============================================================
  *  SPI peripheral clock disable macros (APB1ENR / APB2ENR)
  * ============================================================ */
-#define SPI1_PCLK_DI()      do{ ( RCC->APB2ENR &= ~( 1 << 12 ) );  ( SPI1->CR1 &= ~( 1 << 6 ) ); } while(0)  /* Disable SPI1 clock (APB2) */
-#define SPI2_PCLK_DI()      do{ ( RCC->APB1ENR &= ~( 1 << 14 ) );  ( SPI2->CR1 &= ~( 1 << 6 ) ); } while(0)  /* Disable SPI2 clock (APB1) */
-#define SPI3_PCLK_DI()      do{ ( RCC->APB1ENR &= ~( 1 << 15 ) );  ( SPI3->CR1 &= ~( 1 << 6 ) ); } while(0) /* Disable SPI3 clock (APB1) */
+#define SPI1_PCLK_DI()      ( RCC->APB2ENR &= ~( 1 << 12 ) )  /* Disable SPI1 clock (APB2) */
+#define SPI2_PCLK_DI()      ( RCC->APB1ENR &= ~( 1 << 14 ) )  /* Disable SPI2 clock (APB1) */
+#define SPI3_PCLK_DI()      ( RCC->APB1ENR &= ~( 1 << 15 ) ) /* Disable SPI3 clock (APB1) */
 
 /* ============================================================
  *  USART/UART peripheral clock enable macros (APB1ENR / APB2ENR)

@@ -40,6 +40,18 @@ void SPI_Init(SPI_Handle_t *pSPIHandle)
     pSPIHandle->pSPIx->CR1 = tempReg;
 }
 
+void SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t Status)
+{
+    if(Status == ENABLE)
+    {
+        pSPIx->CR1 |= (1 << SPI_CR1_SSI);
+    }
+    else
+    {
+        pSPIx->CR1 &= ~(1 << SPI_CR1_SSI);
+    }
+}
+
 void SPI_DeInit(SPI_RegDef_t *pSPIx)
 {
     if(pSPIx == SPI1)
@@ -90,6 +102,16 @@ void SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t Status)
     }
 }
 
+void SPI_Enable(SPI_RegDef_t *pSPIx)
+{
+    pSPIx->CR1 |= (1 << SPI_CR1_SPE);
+}
+
+void SPI_Disable(SPI_RegDef_t *pSPIx)
+{
+    pSPIx->CR1 &= ~(1 << SPI_CR1_SPE);
+}
+
 uint8_t SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagOffset)
 {
     if(pSPIx->SR & ( 1 << FlagOffset ))
@@ -111,7 +133,8 @@ void SPI_Send(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len)
             pSPIx->DR = *((uint16_t*)pTxBuffer);
             Len--;
             Len--;
-            (uint16_t*)pTxBuffer++;
+            pTxBuffer++;
+            pTxBuffer++;
         }
         else //8bit DFF
         {

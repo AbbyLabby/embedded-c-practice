@@ -93,6 +93,9 @@ typedef struct
 void     SPI_Init(SPI_Handle_t *pSPIHandle);                          /* Initialize a GPIO pin using the settings in GPIO_Handle_t        */
 void     SPI_DeInit(SPI_RegDef_t *pSPIx);                             /* Reset all registers of a GPIO port via RCC AHB1RSTR              */
 void     SPI_PeriClockControl(SPI_RegDef_t *pSPIx, uint8_t Status);  /* Enable or disable the peripheral clock for a GPIO port           */
+void     SPI_SSIConfig(SPI_RegDef_t *pSPIx, uint8_t Status);
+void    SPI_Enable(SPI_RegDef_t *pSPIx);
+void    SPI_Disable(SPI_RegDef_t *pSPIx);
 
 uint8_t  SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagOffset);
 

@@ -14,6 +14,7 @@ int main(void)
     GPIO_Handle_t SPIPins;
 
     SPIPins.pGPIOBaseAddr = GPIOB;
+    SPIPins.GPIO_PinConfig.GPIO_PinMode = GPIO_MODE_ALFTN;
     SPIPins.GPIO_PinConfig.GPIO_PinAltFunMode = 5;
     SPIPins.GPIO_PinConfig.GPIO_PinOPType = GPIO_OP_TYPE_PP;
     SPIPins.GPIO_PinConfig.GPIO_PinPuPdControll = GPIO_NO_PUPD;
@@ -48,11 +49,16 @@ int main(void)
 
     SPI_Init(&SPI2Handle);
 
-    char user_data[] = "Hello world";
+    SPI_SSIConfig(SPI2, ENABLE);
 
-    SPI_Send(SPI2, (uint8_t*)user_data, strlen(user_data));
+    SPI_Enable(SPI2);
 
-    while(1);
+    while(1)
+    {
+        char user_data[] = "Hello world";
+
+        SPI_Send(SPI2, (uint8_t*)user_data, strlen(user_data));
+    }
 
     return 0;
 }
