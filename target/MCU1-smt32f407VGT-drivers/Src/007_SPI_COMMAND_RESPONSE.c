@@ -173,6 +173,102 @@ int main(void)
             SPI_Receive(SPI2, &response, 1);
         }
 
+        while ( !GPIO_ReadFromInputPin(GPIOA, GPIO_PIN_NO_0) );
+
+        delay(); //debounce delay
+
+        //CMD 3
+        commandCode = COMMAND_LED_READ;
+
+        SPI_Send(SPI2, &commandCode, 1);
+
+        //dummy read
+        SPI_Receive(SPI2, &dummy_read, 1);
+
+        //send some dummy bits to fetch response from the slave
+        SPI_Send(SPI2, &dummy_write, 1);
+        SPI_Receive(SPI2, &ackByte, 1);
+
+        if( SPI_VeifyResponse(ackByte) )
+        {
+            args[0] = LED_PIN;
+
+            SPI_Send(SPI2, args, 1);
+            SPI_Receive(SPI2, &dummy_read, 1);
+
+            delay();
+
+            //send some dummy bits to fetch response from the slave
+            SPI_Send(SPI2, &dummy_write, 1);
+            SPI_Receive(SPI2, &response, 1);
+        }
+
+        while ( !GPIO_ReadFromInputPin(GPIOA, GPIO_PIN_NO_0) );
+
+        delay(); //debounce delay
+
+        //CMD 4
+        commandCode = COMMAND_PRINT;
+
+        SPI_Send(SPI2, &commandCode, 1);
+
+        //dummy read
+        SPI_Receive(SPI2, &dummy_read, 1);
+
+        //send some dummy bits to fetch response from the slave
+        SPI_Send(SPI2, &dummy_write, 1);
+        SPI_Receive(SPI2, &ackByte, 1);
+
+        if( SPI_VeifyResponse(ackByte) )
+        {
+            uint8_t message[] = "Hello, Arduino!";
+
+            args[0] = strlen((char*)message);
+
+            SPI_Send(SPI2, args, 1);
+            SPI_Receive(SPI2, &dummy_read, 1);
+
+            delay();
+
+            for(int i = 0; i < args[0]; i++)
+            {
+                SPI_Send(SPI2, &message[i], 1);
+                SPI_Receive(SPI2, &dummy_read, 1);
+            }
+        }
+
+        while ( !GPIO_ReadFromInputPin(GPIOA, GPIO_PIN_NO_0) );
+
+        delay(); //debounce delay
+
+        //CMD 5
+        commandCode = COMMAND_ID_READ;
+
+        SPI_Send(SPI2, &commandCode, 1);
+
+        //dummy read
+        SPI_Receive(SPI2, &dummy_read, 1);
+
+        //send some dummy bits to fetch response from the slave
+        SPI_Send(SPI2, &dummy_write, 1);
+        SPI_Receive(SPI2, &ackByte, 1);
+
+        if( SPI_VeifyResponse(ackByte) )
+        {
+            delay();
+
+            uint8_t message[11];
+
+            for(int i = 0; i < 10; i++)
+            {
+                SPI_Send(SPI2, &dummy_write, 1);
+                SPI_Receive(SPI2, &message[i], 1);
+            }
+
+            message[10] = '\0';
+        }
+
+
         while(SPI_GetFlagStatus(SPI2, SPI_SR_BSY) == FLAG_SET); //wait until flag BSY is set
 
         SPI_Disable(SPI2);
