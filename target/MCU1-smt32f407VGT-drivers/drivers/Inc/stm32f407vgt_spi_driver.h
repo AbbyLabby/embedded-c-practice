@@ -27,6 +27,12 @@ typedef struct
 {
     SPI_RegDef_t *pSPIx;
     SPI_Config_t SPIConfig;
+    uint8_t *pTxBuffer;
+    uint8_t *pRxBuffer;
+    uint8_t TxLen;
+    uint8_t RxLen;
+    uint8_t TxState;
+    uint8_t RxState;
 } SPI_Handle_t;
 
 #define SPI_DEVICE_MODE_MASTER          1
@@ -100,13 +106,30 @@ void     SPI_SSOEConfig(SPI_RegDef_t *pSPIx, uint8_t Status);
 
 uint8_t  SPI_GetFlagStatus(SPI_RegDef_t *pSPIx, uint32_t FlagOffset);
 
+void     SPI_ClearOVRFlag(SPI_Handle_t *pSPIHandle);
+void     SPI_CloseTransmission(SPI_Handle_t *pSPIHandle);
+void     SPI_CloseReception(SPI_Handle_t *pSPIHandle);
+
 void     SPI_Send(SPI_RegDef_t *pSPIx, uint8_t *pTxBuffer, uint32_t Len);
 void     SPI_Receive(SPI_RegDef_t *pSPIx, uint8_t *pRxBuffer, uint32_t Len);
+
+uint8_t  SPI_SendIT(SPI_Handle_t *pSPIHandle, uint8_t *pTxBuffer, uint32_t Len);
+uint8_t  SPI_ReceiveIT(SPI_Handle_t *pSPIHandle, uint8_t *pRxBuffer, uint32_t Len);
 
 void     SPI_IRQInterruptConfig(uint8_t IRQNumber, uint8_t Status);      /* Enable/disable an IRQ line in the NVIC (processor side)        */
 void     SPI_IRQPriorityConfig(uint8_t IRQNumber, uint32_t IRQPriority);  /* Set IRQ priority in the NVIC IPR registers (0 = highest)       */
 void     SPI_IRQHandling(SPI_Handle_t *pSPIHandle);                             /* Call from EXTIx_IRQHandler to clear the EXTI pending bit       */
 
+void     SPI_ApplicationEventCallback(SPI_Handle_t *pSPIHandle, uint8_t Event);
+
+#define SPI_READY           0
+#define SPI_BUSY_IN_RX      1
+#define SPI_BUSY_IN_TX      2
+
+//possible spi application events
+#define SPI_EVENT_TX_CMPLT  1
+#define SPI_EVENT_RX_CMPLT  2
+#define SPI_EVENT_OVR_ERR   3
 
 
 #endif /* INC_STM32F407VGT_SPI_DRIVER_H_ */

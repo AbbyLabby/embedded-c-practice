@@ -12,6 +12,9 @@
 #define INC_STM32F407VGT_H_
 
 #include <stdint.h>
+#include <stddef.h>
+
+#define __weak __attribute__((weak))
 
 /*
  * ============================================================
@@ -458,6 +461,9 @@ typedef struct
 #define IRQ_NO_EXTI4        10   /* EXTI line 4          */
 #define IRQ_NO_EXTI9_5      23   /* EXTI lines 5 to 9    */
 #define IRQ_NO_EXTI15_10    40   /* EXTI lines 10 to 15  */
+#define IRQ_NO_SPI1         35
+#define IRQ_NO_SPI2         36
+#define IRQ_NO_SPI3         51
 
 #define NVIC_PRIO_0        0
 #define NVIC_PRIO_1        1
