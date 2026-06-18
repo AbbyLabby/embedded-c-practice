@@ -27,7 +27,7 @@ void GPIO_PreInit(GPIO_Handle_t *GPIOPins)
     GPIO_Init(GPIOPins);
 
     //miso
-    //GPIOPins.GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
+    //GPIOPins->GPIO_PinConfig.GPIO_PinNumber = GPIO_PIN_NO_14;
     //GPIO_Init(&GPIOPins);
 
     //nss
